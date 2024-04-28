@@ -1,20 +1,5 @@
 const gameBlock = document.querySelector('#game')
 
-const testPicture = {
-    "complexity": "light",
-    "rows": 5,
-    "cols": 5,
-    // "calcSize": function() {return this.rows * this.cols},
-    "size": function() {return this.rows * this.cols},
-    "coordinates": [
-        [1, 0, 0, 0, 0],
-        [0, 1, 0, 0, 0],
-        [0, 0, 1, 0, 0],
-        [0, 0, 0, 1, 0],
-        [0, 0, 0, 0, 1]
-    ]
-}
-
 class Nonogram {
     rows;
     cols;
@@ -43,19 +28,17 @@ class Nonogram {
         return this.rows * this.cols;
     }
     victoryBoxes() {
-        const victory = []
+        const victoryArr = []
         for (let arr = 0; arr < this.coordinates.length; arr++) {
             console.log()
             this.coordinates[arr].forEach((el, index) => {
                 if (el) {
-                    victory.push(index + (arr * this.cols))
+                    victoryArr.push(index + (arr * this.cols))
                 }
             })
         }
-        return victory;
+        return victoryArr.sort((a,b) => {return a-b;});
     }
-    
-
 }
 
 let pic = new Nonogram(1, [
@@ -78,7 +61,7 @@ function gameStart(picture) {
             if (!box.classList.contains('nofill')) {
                 box.classList.toggle('filled')
             }
-            
+            checkBox(picture)
         })
         box.addEventListener('contextmenu', (e) => {
             e.preventDefault()
@@ -91,7 +74,20 @@ function gameStart(picture) {
     }
     gameBlock.append(nonogramBlock)
 }
+function checkBox(picture) {
+    const boxesList = document.querySelectorAll('.filled')
+    const resBox = [...document.querySelectorAll('.box')].map((el, i) => {
+        if (el.classList.contains('filled')) return i
+    }).filter(item => null != item).sort((a,b) => {return a-b;})
+    if ( boxesList.length == picture.victoryBoxes().length && resBox.join('') == picture.victoryBoxes().join('')) {
+        setTimeout(gameOver, 300)
+    }
+}
 
-
+function gameOver() {
+    console.log('vic')
+    gameBlock.innerHTML = ''
+    gameStart(pic)
+}
 
 gameStart(pic)
