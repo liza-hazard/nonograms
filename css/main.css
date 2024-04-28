@@ -1,1 +1,1 @@
-
+.nonogram{display:grid;grid-template-columns:repeat(5, 25px);grid-template-rows:repeat(5, 25px);justify-content:space-between;border:1px solid #000;flex-wrap:wrap}.nonogram[data-size="25"]{width:125px}.nonogram .box{width:25px;height:25px;border:1px solid #000;display:grid;place-items:center}.nonogram .box.filled{background-color:#000}.nonogram .box.nofill{display:flex;align-items:center;justify-content:center}.nonogram .box.nofill::before{content:"X";color:#000;font-family:monospace}
