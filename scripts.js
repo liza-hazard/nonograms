@@ -28,7 +28,18 @@ function gameStart(picture) {
     for (let i = 0; i < picture.size(); i++) {
         let box = document.createElement('div')
         box.classList.add('box')
-        
+        box.addEventListener('click', () => {
+            if (!box.classList.contains('nofill')) {
+                box.classList.toggle('filled')
+            }
+        })
+        box.addEventListener('contextmenu', (e) => {
+            e.preventDefault()
+            box.classList.toggle('nofill')
+            if (box.classList.contains('filled')) {
+                box.classList.remove('filled')
+            }
+        })
         nonogramBlock.append(box)
     }
     gameBlock.append(nonogramBlock)
