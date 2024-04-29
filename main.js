@@ -42,20 +42,69 @@ class Nonogram {
     setBoxCount() {
         document.documentElement.style.setProperty('--columsCount', this.cols)
     }
+    hintsPlacement() {
+        const hints = {}
+        this.coordinates.forEach((row, arrIndex) => {
+            let col = []
+            for (let j = 0; j < this.coordinates.length; j++) {
+                col.push(this.coordinates[j][arrIndex])
+            }
+            hintSearch(col, arrIndex, 'col') 
+            hintSearch(row, arrIndex, 'row')    
+        })
+        function hintSearch(row, arrIndex, oriental) {
+            if (row.reduce((acc, elem) => acc + elem) > 1) {
+                // console.log('recurse', rowCount(row, row.indexOf(1)))
+                const rowHint = []
+                let currRow = [...row]
+                while (currRow.indexOf(1) >= 0) {
+                    let numOrder = rowCount(currRow, currRow.indexOf(1))
+                    // console.log('numOrder ', numOrder)
+                    rowHint.push(numOrder)
+                    currRow.splice(currRow.indexOf(1), numOrder)
+                    // console.log('currRow ', currRow)
+                }
+                
+                hints[oriental + (arrIndex + 1)] = rowHint
+            } 
+            else if (row.reduce((acc, elem) => acc + elem) === 1) {
+                hints[oriental + (arrIndex + 1)] = [1]
+            }
+            else {
+                hints[oriental + (arrIndex + 1)] = []
+            }
+        }
+        function rowCount(row, boxIndex) {
+            if (row[boxIndex + 1] == 0 || !row[boxIndex + 1]) return 1;
+            return 1 + rowCount(row, boxIndex + 1);
+        }
+        function sortObj(obj) {
+            let arr = []
+            for (let elem in obj) {
+                arr.push([elem, obj[elem]])
+            }
+            arr.sort()
+            arr = Object.fromEntries(arr)
+            return arr
+        }
+        return sortObj(hints);
+    }
 }
 
 let pic = new Nonogram(1, [
-    [1, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1],
     [0, 1, 0, 0, 0],
-    [0, 0, 1, 0, 0],
+    [1, 0, 1, 0, 0],
     [0, 0, 0, 1, 0],
-    [0, 0, 0, 0, 1]
+    [0, 0, 0, 1, 1]
 ]);
 
 function gameStart(picture) {
     picture.setBoxCount()
-    let nonogramBlock = document.createElement('div')
+    const nonogramBlock = document.createElement('div')
+    const gameContainer = document.createElement('div')
     nonogramBlock.classList.add('nonogram')
+    gameContainer.classList.add('game__container')
     nonogramBlock.setAttribute('data-size', picture.size)
     for (let i = 0; i < picture.size; i++) {
         let box = document.createElement('div')
@@ -75,7 +124,32 @@ function gameStart(picture) {
         })
         nonogramBlock.append(box)
     }
-    gameBlock.append(nonogramBlock)
+    createHints(picture)
+    gameContainer.append(nonogramBlock)
+    gameBlock.append(gameContainer)
+    function createHints(picture) {
+        const hints = picture.hintsPlacement()
+        for (let el in hints) {
+            // console.log(el)
+            let hintEl = document.createElement('div')
+            hintEl.classList.add('hint', 'hint--' + el.slice(0, -1))
+            hints[el].forEach((clue) => {
+                let clueEl = document.createElement('span')
+                clueEl.classList.add('hint__element')
+                clueEl.innerHTML = clue
+                hintEl.append(clueEl)
+            })
+            if (el === 'col1') {
+                let hintEmpty = document.createElement('div')
+                hintEmpty.classList.add('hint', 'hint--' + el.slice(0, -1), 'hint--empty')
+                gameContainer.append(hintEmpty)
+            }
+            gameContainer.append(hintEl)
+            
+        }
+        
+        
+    }
 }
 
 function checkBox(picture) {
