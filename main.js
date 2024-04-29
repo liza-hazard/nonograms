@@ -39,6 +39,9 @@ class Nonogram {
         }
         return victoryArr.sort((a,b) => {return a-b;});
     }
+    setBoxCount() {
+        document.documentElement.style.setProperty('--columsCount', this.cols)
+    }
 }
 
 let pic = new Nonogram(1, [
@@ -49,8 +52,8 @@ let pic = new Nonogram(1, [
     [0, 0, 0, 0, 1]
 ]);
 
-
 function gameStart(picture) {
+    picture.setBoxCount()
     let nonogramBlock = document.createElement('div')
     nonogramBlock.classList.add('nonogram')
     nonogramBlock.setAttribute('data-size', picture.size)
@@ -74,6 +77,7 @@ function gameStart(picture) {
     }
     gameBlock.append(nonogramBlock)
 }
+
 function checkBox(picture) {
     const boxesList = document.querySelectorAll('.filled')
     const resBox = [...document.querySelectorAll('.box')].map((el, i) => {
@@ -91,3 +95,4 @@ function gameOver() {
 }
 
 gameStart(pic)
+
