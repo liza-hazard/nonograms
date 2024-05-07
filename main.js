@@ -4,7 +4,7 @@ class Nonogram {
     rows;
     cols;
     complexity;
-    constructor(complexityNum, coordinates) {
+    constructor(complexityNum, name, coordinates) {
         switch (complexityNum) {
             case 1:
                 this.complexity = 'light'
@@ -23,6 +23,7 @@ class Nonogram {
                 break;
         }
         this.coordinates = coordinates;
+        this.name = name
     }
     get size() {
         return this.rows * this.cols;
@@ -59,12 +60,9 @@ class Nonogram {
                 let currRow = [...row]
                 while (currRow.indexOf(1) >= 0) {
                     let numOrder = rowCount(currRow, currRow.indexOf(1))
-                    // console.log('numOrder ', numOrder)
                     rowHint.push(numOrder)
                     currRow.splice(currRow.indexOf(1), numOrder)
-                    // console.log('currRow ', currRow)
                 }
-                
                 hints[oriental + (arrIndex + 1)] = rowHint
             } 
             else if (row.reduce((acc, elem) => acc + elem) === 1) {
@@ -83,7 +81,9 @@ class Nonogram {
             for (let elem in obj) {
                 arr.push([elem, obj[elem]])
             }
-            arr.sort()
+            arr.sort((a,b) => {
+                return a - b;
+            })
             arr = Object.fromEntries(arr)
             return arr
         }
@@ -91,13 +91,53 @@ class Nonogram {
     }
 }
 
-let pic = new Nonogram(1, [
+const pictures = []
+
+let lightVer = new Nonogram(1, 'small-1',[
     [0, 1, 1, 1, 1],
     [0, 1, 0, 0, 0],
     [1, 0, 1, 0, 0],
     [0, 0, 0, 1, 0],
     [0, 0, 0, 1, 1]
 ]);
+pictures.push(lightVer)
+pictures.push(new Nonogram(1, 'small-2', [
+    [0, 1, 1, 1, 0],
+    [0, 1, 1, 0, 0],
+    [1, 0, 1, 0, 0],
+    [1, 0, 0, 1, 0],
+    [0, 0, 0, 1, 1]
+]), 
+new Nonogram(2, 'medium-1', [
+    [0, 1, 1, 1, 0, 0, 0, 0, 1, 1],
+    [0, 1, 1, 0, 0, 1, 0, 0, 0, 0],
+    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [1, 0, 0, 1, 0, 1, 1, 1, 1, 1],
+    [0, 0, 0, 1, 1, 1, 0, 0, 0, 1],
+    [0, 0, 0, 1, 0, 0, 1, 1, 1, 0],
+    [1, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [1, 0, 1, 0, 1, 0, 1, 1, 0, 0],
+    [0, 0, 1, 0, 1, 0, 1, 1, 0, 0]
+]),
+new Nonogram(3, 'hard-1', [
+    [0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+    [0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1],
+    [1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
+    [1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+    [1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+    [0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+    [0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+    [0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+    [0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+    [0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+    [0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+]))
+
 
 function gameStart(picture) {
     picture.setBoxCount()
@@ -125,6 +165,7 @@ function gameStart(picture) {
         nonogramBlock.append(box)
     }
     createHints(picture)
+    createTabs(pictures)
     gameContainer.append(nonogramBlock)
     gameBlock.append(gameContainer)
     function createHints(picture) {
@@ -132,7 +173,7 @@ function gameStart(picture) {
         for (let el in hints) {
             // console.log(el)
             let hintEl = document.createElement('div')
-            hintEl.classList.add('hint', 'hint--' + el.slice(0, -1))
+            hintEl.classList.add('hint', 'hint--' + el.replace(/[^a-z]/g, ''))
             hints[el].forEach((clue) => {
                 let clueEl = document.createElement('span')
                 clueEl.classList.add('hint__element')
@@ -141,7 +182,7 @@ function gameStart(picture) {
             })
             if (el === 'col1') {
                 let hintEmpty = document.createElement('div')
-                hintEmpty.classList.add('hint', 'hint--' + el.slice(0, -1), 'hint--empty')
+                hintEmpty.classList.add('hint', 'hint--' + el.replace(/[^a-z]/g, ''), 'hint--empty')
                 gameContainer.append(hintEmpty)
             }
             gameContainer.append(hintEl)
@@ -158,15 +199,53 @@ function checkBox(picture) {
         if (el.classList.contains('filled')) return i
     }).filter(item => null != item).sort((a,b) => {return a-b;})
     if ( boxesList.length == picture.victoryBoxes().length && resBox.join('') == picture.victoryBoxes().join('')) {
-        setTimeout(gameOver, 300)
+        setTimeout(gameOver, 500)
     }
 }
 
 function gameOver() {
     console.log('vic')
     gameBlock.innerHTML = ''
-    gameStart(pic)
+    // gameStart(pic)
 }
 
-gameStart(pic)
+function createTabs(pictures) {
+    const tabsMain = document.createElement('div')
+    const tabsHead = document.createElement('div')
+    const tabsContainer = document.createElement('div')
+    const gameLevels = ['light', 'medium', 'hard']
+    tabsMain.classList.add('tabs')
+    tabsHead.classList.add('tabs__header')
+    tabsContainer.classList.add('tabs__container')
+    gameLevels.forEach((el) => {
+        const panelHead = document.createElement('div')
+        const panelTab = document.createElement('div')
+        panelHead.classList.add('tabs__button', 'tabs__button--' + el)
+        panelHead.innerHTML = el
+        panelHead.addEventListener('click', () => {
+            document.querySelectorAll('.tabs__panel').forEach((tab) => {
+                tab.classList.remove('tabs__panel--active')
+            })
+            panelTab.classList.add('tabs__panel--active')
+        })
+        panelTab.classList.add('tabs__panel', 'tabs__panel--' + el)
+        pictures.filter((nonogram) => nonogram.complexity == el).forEach((pic) => {
+            const game = document.createElement('div')
+            game.classList.add('game')
+            game.innerHTML = pic.name
+            game.addEventListener('click', () => {
+                gameOver()
+                gameStart(pic)
+            })
+            panelTab.append(game)
+        })
+        tabsHead.append(panelHead)
+        tabsContainer.append(panelTab)
+    })
+    tabsMain.append(tabsHead)
+    tabsMain.append(tabsContainer)
+    gameBlock.append(tabsMain)
+}
+
+gameStart(pictures[3])
 
