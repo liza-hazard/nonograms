@@ -143,6 +143,7 @@ function gameStart(picture) {
     picture.setBoxCount()
     const nonogramBlock = document.createElement('div')
     const gameContainer = document.createElement('div')
+    const solutionBtn = document.createElement('div')
     nonogramBlock.classList.add('nonogram')
     gameContainer.classList.add('game__container')
     nonogramBlock.setAttribute('data-size', picture.size)
@@ -191,6 +192,12 @@ function gameStart(picture) {
         
         
     }
+
+    solutionBtn.innerHTML = 'show solution'
+    solutionBtn.addEventListener('click', () => {
+        showSolution(picture)
+    })
+    gameContainer.append(solutionBtn)
 }
 
 function checkBox(picture) {
@@ -247,5 +254,17 @@ function createTabs(pictures) {
     gameBlock.append(tabsMain)
 }
 
-gameStart(pictures[3])
+function showSolution(picture) {
+    const boxes = document.querySelectorAll('.box')
+    const solution = picture.victoryBoxes()
+    boxes.forEach((box) => {
+        box.classList.remove('filled')
+    })
+    solution.forEach((vic) => {
+        boxes[vic].classList.add('filled')
+    })
+}
+
+
+gameStart(pictures[1])
 
