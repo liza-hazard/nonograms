@@ -555,9 +555,12 @@ function gameStart(picture) {
     const nonogramBlock = document.createElement('div')
     const gameContainer = document.createElement('div')
     const solutionBtn = document.createElement('div')
+    const randomGameBtn = document.createElement('div')
+
     nonogramBlock.classList.add('nonogram')
     gameContainer.classList.add('game__container')
     nonogramBlock.setAttribute('data-size', picture.size)
+
     for (let i = 0; i < picture.size; i++) {
         let box = document.createElement('div')
         box.classList.add('box')
@@ -578,6 +581,7 @@ function gameStart(picture) {
     }
     createHints(picture)
     createTabs(pictures)
+
     gameContainer.append(nonogramBlock)
     gameBlock.append(gameContainer)
     function createHints(picture) {
@@ -605,10 +609,15 @@ function gameStart(picture) {
     }
 
     solutionBtn.innerHTML = 'show solution'
-    solutionBtn.addEventListener('click', () => {
-        showSolution(picture)
-    })
-    gameContainer.append(solutionBtn)
+    randomGameBtn.innerHTML = 'start new game'
+
+    solutionBtn.addEventListener('click', () => {showSolution(picture)})
+    randomGameBtn.addEventListener('click', () => {
+        gameOver()
+        gameStart(randomPic(pictures, picture))})
+
+    gameBlock.append(solutionBtn)
+    gameBlock.append(randomGameBtn)
 }
 
 function checkBox(picture) {
@@ -676,8 +685,17 @@ function showSolution(picture) {
     })
 }
 
+function randomPic(array, curr = false) {
+    let picture = array[Math.floor(Math.random() * ((array.length) - 0) ) + 0]
+    if (curr) {
+        while (curr.name == picture.name) {
+            picture = array[Math.floor(Math.random() * ((array.length) - 0) ) + 0]
+        }
+    }
+    return picture;
+}
 
-gameStart(pictures[1])
+gameStart(pictures[0])
 
 
 
