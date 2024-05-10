@@ -140,6 +140,7 @@ new Nonogram(3, 'hard-1', [
 
 
 function gameStart(picture) {
+    gameBlock.innerHTML = ''
     picture.setBoxCount()
     const nonogramBlock = document.createElement('div')
     const gameContainer = document.createElement('div')
@@ -170,6 +171,7 @@ function gameStart(picture) {
     }
     createHints(picture)
     createTabs(pictures)
+    gameBlock.append(createTimer(nonogramBlock))
 
     gameContainer.append(nonogramBlock)
     gameBlock.append(gameContainer)
@@ -188,6 +190,7 @@ function gameStart(picture) {
             if (el === 'col1') {
                 let hintEmpty = document.createElement('div')
                 hintEmpty.classList.add('hint', 'hint--' + el.replace(/[^a-z]/g, ''), 'hint--empty')
+                hintEmpty.addEventListener('click', stopTimer)
                 gameContainer.append(hintEmpty)
             }
             gameContainer.append(hintEl)
@@ -215,14 +218,21 @@ function checkBox(picture) {
         if (el.classList.contains('filled')) return i
     }).filter(item => null != item).sort((a,b) => {return a-b;})
     if ( boxesList.length == picture.victoryBoxes().length && resBox.join('') == picture.victoryBoxes().join('')) {
-        setTimeout(gameOver, 500)
+        setTimeout(() => {gameOver(picture, true)}, 500)
     }
 }
 
-function gameOver() {
-    console.log('vic')
-    gameBlock.innerHTML = ''
-    // gameStart(pic)
+function gameOver(picture = 0, victory = false) {
+    clearInterval(time)
+    if (victory) {
+        console.log('vic')
+        const victoryObj = {...stopTimer()}
+        victoryObj['name'] = picture.name
+        console.log(victoryObj)
+    }
+    
+    time = 0
+    second = 0 
 }
 
 function createTabs(pictures) {
@@ -283,6 +293,39 @@ function randomPic(array, curr = false) {
     }
     return picture;
 }
+
+let second = 0;
+let time;
+function createTimer(board) {
+    const timerBlock = document.createElement('div')
+
+    timerBlock.classList.add('timer')
+    timerBlock.innerHTML = '00:00'
+
+    function startTimer() {
+        if(!time) {
+            time = setInterval(() => {
+                second += 1000;
+                let dateTimer = new Date(second);
+                timerBlock.innerHTML = 
+                ('0' + dateTimer.getUTCMinutes()).slice(-2) + ':' +
+                ('0' + dateTimer.getUTCSeconds()).slice(-2)
+            }, 1000)
+        }
+    }
+    board.addEventListener('click', startTimer)
+
+    return timerBlock;
+}
+
+function stopTimer() {
+    const timeObj = {}
+    timeObj['time'] = document.querySelector('.timer').innerHTML
+    timeObj['seconds'] = second / 1000
+    return timeObj;
+}
+
+
 
 gameStart(pictures[0])
 
