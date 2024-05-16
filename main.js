@@ -239,9 +239,11 @@ function gameOver(picture = 0, victory = false) {
         console.log('vic')
         const victoryObj = {...stopTimer()}
         victoryObj['name'] = picture.name
-        console.log(victoryObj)
+        victoryObj['complexity'] = picture.complexity
+        let resultsArr = localStorage.getItem('results') == null ? [] : JSON.parse(localStorage.getItem('results'));
+        resultsArr.push(victoryObj)
+        localStorage.setItem('results', JSON.stringify(resultsArr))
     }
-    
     time = 0
     second = 0 
 }
