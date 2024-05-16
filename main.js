@@ -147,9 +147,12 @@ function gameStart(picture) {
     const solutionBtn = document.createElement('div')
     const randomGameBtn = document.createElement('div')
     const resetGameBtn = document.createElement('div')
+    const rateBtn = document.createElement('div')
+    const rateBlock = document.createElement('div')
 
     nonogramBlock.classList.add('nonogram')
     gameContainer.classList.add('game__container')
+    rateBlock.classList.add('rate')
     nonogramBlock.setAttribute('data-size', picture.size)
 
     for (let i = 0; i < picture.size; i++) {
@@ -204,6 +207,7 @@ function gameStart(picture) {
     solutionBtn.innerHTML = 'show solution'
     randomGameBtn.innerHTML = 'start new game'
     resetGameBtn.innerHTML = 'reset game'
+    rateBtn.innerHTML = 'rate'
 
     solutionBtn.addEventListener('click', () => {
         clearInterval(time)
@@ -217,10 +221,17 @@ function gameStart(picture) {
         gameOver()
         gameStart(picture)
     })
+    rateBtn.addEventListener('click', () => {
+        document.querySelector('.rate').innerHTML = ''
+        document.querySelector('.rate').append(showResults())
+    })
+    rateBlock.append(showResults())
     
     gameBlock.append(solutionBtn)
     gameBlock.append(randomGameBtn)
     gameBlock.append(resetGameBtn)
+    gameBlock.append(rateBtn)
+    gameBlock.append(rateBlock)
 }
 
 function checkBox(picture) {
@@ -336,6 +347,41 @@ function stopTimer() {
     timeObj['time'] = document.querySelector('.timer').innerHTML
     timeObj['seconds'] = second / 1000
     return timeObj;
+}
+
+function showResults() {
+    let resultsArr = localStorage.getItem('results') == null ? [] : JSON.parse(localStorage.getItem('results'));
+    if (resultsArr.length > 0) {
+        resultsArr = resultsArr.sort((a, b) => a.seconds > b.seconds ? 1 : -1);
+    }
+    const rating = document.createElement('div')
+    rating.classList.add('rate__container')
+    function tableRows(results) {
+        let rows = ''
+        for (let i = 0; i < results.length; i++) {
+            rows += `
+            <tr>
+                <td>${i+1}</td>
+                <td>${results[i].name}</td>
+                <td>${results[i].complexity}</td>
+                <td>${results[i].time}</td>
+            </tr>`
+        }
+        return rows;
+    }
+    rating.innerHTML = `
+    <table class="rate__table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Template</th>
+                <th>Level</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>${tableRows(resultsArr)}</tbody>
+    </table>`;
+    return rating;
 }
 
 
