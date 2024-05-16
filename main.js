@@ -146,6 +146,7 @@ function gameStart(picture) {
     const gameContainer = document.createElement('div')
     const solutionBtn = document.createElement('div')
     const randomGameBtn = document.createElement('div')
+    const resetGameBtn = document.createElement('div')
 
     nonogramBlock.classList.add('nonogram')
     gameContainer.classList.add('game__container')
@@ -202,14 +203,24 @@ function gameStart(picture) {
 
     solutionBtn.innerHTML = 'show solution'
     randomGameBtn.innerHTML = 'start new game'
+    resetGameBtn.innerHTML = 'reset game'
 
-    solutionBtn.addEventListener('click', () => {showSolution(picture)})
+    solutionBtn.addEventListener('click', () => {
+        clearInterval(time)
+        showSolution(picture)
+    })
     randomGameBtn.addEventListener('click', () => {
         gameOver()
-        gameStart(randomPic(pictures, picture))})
-
+        gameStart(randomPic(pictures, picture))
+    })
+    resetGameBtn.addEventListener('click', () => {
+        gameOver()
+        gameStart(picture)
+    })
+    
     gameBlock.append(solutionBtn)
     gameBlock.append(randomGameBtn)
+    gameBlock.append(resetGameBtn)
 }
 
 function checkBox(picture) {
