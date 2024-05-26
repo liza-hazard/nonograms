@@ -760,7 +760,7 @@ function stopTimer() {
     return timeObj;
 }
 
-function showResults() {
+function showResults() {            
     let resultsArr = localStorage.getItem('results') == null ? [] : JSON.parse(localStorage.getItem('results'));
     if (resultsArr.length > 0) {
         resultsArr = resultsArr.sort((a, b) => a.seconds > b.seconds ? 1 : -1);
@@ -800,6 +800,37 @@ function showResults() {
 gameStart(pictures[0])
 
 
+
+
+
+
+// ripples
+
+class Drop {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.create();
+    }
+    
+    create() {
+        let dropEl = document.createElement('div');
+        dropEl.classList.add('drop');
+        dropEl.style.left = `${this.x}px`;
+        dropEl.style.top = `${this.y}px`;
+        document.body.appendChild(dropEl);
+    }
+}
+
+const createDrop = e => {
+    let xPos = e.clientX,
+        yPos = e.clientY;
+    
+    let drop = new Drop(xPos, yPos);
+    setTimeout(() => {document.querySelector('.drop').remove()}, 3000)
+}
+
+document.addEventListener('click', createDrop);
 
 /***/ })
 
